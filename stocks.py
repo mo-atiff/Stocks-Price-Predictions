@@ -114,7 +114,7 @@ if stocks:
 
     with st.spinner('Model is Predicting Have Patience... It Takes About 4-5 Mins at Max'):
         st.balloons()
-        # model.fit(X_train,y_train,epochs=100,batch_size=64,verbose=1)
+        model.fit(X_train,y_train,epochs=100,batch_size=64,verbose=1)
         st.snow()
 
     print("Training Completed\n")
