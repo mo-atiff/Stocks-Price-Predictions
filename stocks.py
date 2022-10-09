@@ -12,7 +12,7 @@ from datetime import timedelta
 
 # ticker_symbols = ['GOOG', 'TSLA', 'AMZN', 'MSFT', 'AAPL']
 ticker_symbols = []
-nasdaq = pd.read_csv("C:\\Users\\Dell\\Downloads\\nasdaq.csv")\
+nasdaq = pd.read_csv("nasdaq.csv")
 
 st.set_page_config(
     page_title="Audio Emotion Recognizer",
