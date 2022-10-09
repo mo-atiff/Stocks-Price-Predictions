@@ -216,7 +216,7 @@ if stocks:
         st.markdown("<h3 style='text-align: centre; color: cyan;'>ACTUAL vs PRECDICTED</h3>",
                         unsafe_allow_html=True)
 
-    st.dataframe(amz)
+#     st.dataframe(amz)
 
     print("sucess")
 
