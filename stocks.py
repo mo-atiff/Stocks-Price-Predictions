@@ -15,7 +15,7 @@ ticker_symbols = []
 nasdaq = pd.read_csv("nasdaq.csv")
 
 st.set_page_config(
-    page_title="Audio Emotion Recognizer",
+    page_title="Stock Price Predictor",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded",
