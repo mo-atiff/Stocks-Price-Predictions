@@ -1,2 +1,2 @@
 # Stocks-Price-Predictions
-https://atifbeast-stocks-price-predictions-stocks-29sj8b.streamlitapp.com/
+https://atifbeast-stocks-price-predictions-stocks-ctcijo.streamlit.app/
