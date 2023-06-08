@@ -31,6 +31,8 @@ st.set_page_config(
 st.markdown("<h1 style='text-align: centre; color: #39FF14;'>STOCK PRICE PREDICTOR📈</h1>",
                 unsafe_allow_html=True)
 
+st.info('This App targets more specifically short term investors')
+
 col1, col2 = st.columns(2)
 col3, col4, col5, col6, col7 = st.columns(5)
 
