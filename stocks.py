@@ -37,7 +37,7 @@ col3, col4, col5, col6, col7 = st.columns(5)
 with col1:
     st.markdown("<h3 style='text-align: centre; color: #BF3EFF;'>Select Ticker Symbol</h3>",
                 unsafe_allow_html=True)
-    ticker_symbol = st.selectbox("", ticker_symbols)
+    ticker_symbol = st.selectbox("Select Ticker Symbol", ticker_symbols)
 
 with col2:
     st.markdown("<h3 style='text-align: centre; color: #BF3EFF;'>No of Days to Forecast</h3>",
@@ -90,6 +90,7 @@ if predict_button:
 
     if len(data) == 0:
         # st.write("Model was not found")
+        st.write(ticker_symbol, type(ticker_symbol))
         data = pdr.get_data_tiingo(ticker_symbol, api_key = key)
         data = pd.concat(objs=[data], axis=0)
         data = data.reset_index()
