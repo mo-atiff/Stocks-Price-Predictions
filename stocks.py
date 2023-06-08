@@ -90,7 +90,6 @@ if predict_button:
 
     if len(data) == 0:
         # st.write("Model was not found")
-        st.write(ticker_symbol, type(ticker_symbol))
         data = pdr.get_data_tiingo(ticker_symbol, api_key = key)
 #         data = pdr.get_data_tiingo('MSFT', api_key = key)
         data = pd.concat(objs=[data], axis=0)
