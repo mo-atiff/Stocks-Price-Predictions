@@ -1,223 +1,245 @@
+import pandas as pd
 import streamlit as st
 import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
-import pandas_datareader as pdr
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import LSTM
-from datetime import datetime
-from datetime import timedelta
+from pymongo import MongoClient
 
-# ticker_symbols = ['GOOG', 'TSLA', 'AMZN', 'MSFT', 'AAPL']
+from tensorflow.keras.models import model_from_json
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.layers import LSTM
+import pandas_datareader as pdr
+import plotly.express as px
+from sklearn.preprocessing import MinMaxScaler
+from datetime import datetime, timedelta
+import plotly.graph_objects as go
+
+
+key = 'd1e0bf0b26e537200ebc6fce031449455a3f44e9'
+
 ticker_symbols = []
-nasdaq = pd.read_csv("nasdaq.csv")
+nasdaq = pd.read_csv("C:\\Users\\Dell\\Downloads\\nasdaq.csv")
+
+ticker_symbols = nasdaq['Symbol']
 
 st.set_page_config(
-    page_title="Stock Price Predictor",
+    page_title="Stocks Predictions",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-st.markdown(
-    """
-    <style>
-    [data-testid="stSidebar"][aria-expanded="true"] > div:first-child {
-        width: 190px;
-    }
-    [data-testid="stSidebar"][aria-expanded="false"] > div:first-child {
-        width: 100px;
-        margin-left: -500px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.markdown("<h1 style='text-align: centre; color: purple;'>STOCK PRICE PREDICTIONS</h1>",
+st.markdown("<h1 style='text-align: centre; color: #39FF14;'>STOCK PRICE PREDICTOR📈</h1>",
                 unsafe_allow_html=True)
 
-ticker_symbols = nasdaq['Symbol']
+col1, col2 = st.columns(2)
+col3, col4, col5, col6, col7 = st.columns(5)
 
-with st.sidebar:
-    st.markdown("<h3 style='text-align: centre; color: red;'>NO PRICE IS TOO LOW FOR A BEAR OR TOO HIGH FOR A BULL</h3>",
-                    unsafe_allow_html=True)
-    st.image('bear_bull.png')
-    tick = st.selectbox("Select Ticker Symbol", ticker_symbols)
-    future_days = st.number_input(
-        'How Many Future Days Forecast You Wanna See', min_value=1, max_value=1000, step=1)
-
-try:
-    key = 'd1e0bf0b26e537200ebc6fce031449455a3f44e9'
-    amz = pdr.get_data_tiingo(tick, api_key = key)
-except Exception:
-    st.error("Oop's This Error Wasn't Supposed to Happen Try Again after some Time")
-    exit()
-
-amz.to_csv('apl.csv')
-amz = pd.read_csv('apl.csv')
-print("csv-created\n")
-
-low = amz['close']
-
-scaler = MinMaxScaler(feature_range=(0, 1))
-low = np.array(low).reshape(-1, 1)
-
-scaler.fit(low)
-low = scaler.transform(low)
-
-def create_dataset(dataset, time_step=1):
-    dataX, dataY = [], []
-    for i in range(len(dataset)-time_step-1):
-        a = dataset[i:(i+time_step), 0]   ###i=0, 0,1,2,3-----99   100 
-        dataX.append(a)
-        dataY.append(dataset[i + time_step, 0])
-    return np.array(dataX), np.array(dataY)
-
-
-time_step = 100
-X_train, y_train = create_dataset(low, time_step)
-
-X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
-
-print("dataset created\n")
-
-col1, col2, col3 = st.columns(3)
+with col1:
+    st.markdown("<h3 style='text-align: centre; color: #BF3EFF;'>Select Ticker Symbol</h3>",
+                unsafe_allow_html=True)
+    ticker_symbol = st.selectbox("", ticker_symbols)
 
 with col2:
-    st.write('')
-    st.write('')
-    st.write('')
-    st.write(f"YOU SELECTED : {tick}")
-st.write('')
-
-m = st.markdown("""
-<style>
-div.stButton > button:first-child {
-    background-color: purple; color : white
-}
-</style>""", unsafe_allow_html=True)
-
-stocks = st.button("Predict Stocks")
-
-if stocks:
-    model=Sequential()
-    model.add(LSTM(50,return_sequences=True,input_shape=(100,1)))
-    model.add(LSTM(50,return_sequences=True))
-    model.add(LSTM(50))
-    model.add(Dense(1))
-    model.compile(loss='mean_squared_error',optimizer='adam')
-
-    lst = []
-
-    with st.spinner('Model is Predicting Have Patience... It Takes About 4-5 Mins at Max'):
-        st.balloons()
-        model.fit(X_train,y_train,epochs=100,batch_size=64,verbose=1)
-        st.snow()
-
-    print("Training Completed\n")
-
-    data_len = len(low) - 100
-
-    x_input = low[data_len:].reshape(1, -1)
-
-    temp_input = list(x_input)
-    temp_input = temp_input[0].tolist() 
-
-    print(("Prediction starts\n"))
-    lst_output=[]
-    n_steps=100
-    i=0
-    while(i<future_days):
-        if(len(temp_input)>100):
-            #print(temp_input)
-            x_input=np.array(temp_input[1:])
-            print("{} day input {}".format(i,x_input))
-            x_input = x_input.reshape(1,-1)
-            x_input = x_input.reshape((1, n_steps, 1))
-            #print(x_input)
-            yhat = model.predict(x_input, verbose=0)
-            print("{} day output {}".format(i, yhat))
-            temp_input.extend(yhat[0].tolist())
-            temp_input=temp_input[1:]
-            #print(temp_input)
-            lst_output.extend(yhat.tolist())
-            i=i+1
-        else:
-            x_input = x_input.reshape((1, n_steps,1))
-            yhat = model.predict(x_input, verbose=0)
-    #         print(yhat[0]) 
-            temp_input.extend(yhat[0].tolist())
-    #         print(len(temp_input))
-            lst_output.extend(yhat.tolist())
-            i=i+1 
-
-
-    apl = scaler.inverse_transform(lst_output)
-    print("APL : ", apl)
-    day_new = np.arange(1,101)
-    diff = 101 + future_days
-    day_pred = np.arange(101,diff)
-
-    print("Have Future Values\n")
-
-    last_date = amz.iloc[len(amz)-1]['date'].split()[0]
-
-    date_last = datetime.strptime(last_date, "%Y-%m-%d")
-    date_last_F = date_last.strftime("%d-%m-%Y")
-    temp_l = date_last_F.split('-')
-
-    date_last_Fq = datetime(int(temp_l[2]), int(temp_l[1]), int(temp_l[0]))
-    final_dates = []
-
-    for i in range(1, future_days+1):
-        date_last_Fq += timedelta(days=1)
-        print(date_last_Fq)
-        final_dates.append(date_last_Fq)
-
-
-    FINAL_DATES = []
-    for i in final_dates:
-        i = str(i)
-        k = i.split()[0]
-        FINAL_DATES.append(k)
-    st.markdown("<h5 style='text-align: centre; color: yellow;'>Prediction on Closing Price</h5>",
+    st.markdown("<h3 style='text-align: centre; color: #BF3EFF;'>No of Days to Forecast</h3>",
                 unsafe_allow_html=True)
+    forecast_days = st.slider("", min_value=1, max_value=30)
 
-    print("Dates are done\n")
-    apl = apl.flatten()
-    fig, x = plt.subplots()
-    plt.gcf().autofmt_xdate()
-    plt.legend('PREDICTION')
-    x.plot_date(FINAL_DATES, apl)
-    x.plot(apl, label = "PREDICTION")
-    x.legend()
-    st.pyplot(fig)
-    print(apl)
+print('Connecting.....')
+with st.spinner('Hold on...'):
+    try:
+        client = MongoClient('mongodb+srv://Atif:XHMswoIrHKVzfIjo@stockcluster.m5bop17.mongodb.net/') 
+    except Exception:
+        st.error('😲An Unfortunate Error Occurred...check your connection')
 
-    # show exact prices
+print('connection sucessful...')
+database = client.Imstock
+collection = database.stocks # cluster stocks stored in company
 
-    despo = pd.DataFrame({"DATES" : FINAL_DATES, "EXPECTED STOCK PRICE" : apl})
-    col4, col5, col6 = st.columns(3)
-    with col5:
-        st.markdown("<h3 style='text-align: centre; color: cyan;'>DATES vs STOCK PRICE</h3>",
-                    unsafe_allow_html=True)
-        st.dataframe(despo)
+with col5:
+    st.write(' ')
+    st.write(' ')
+    st.write(' ')
 
-    fig2, x2 = plt.subplots()
-    x2.plot(day_new,scaler.inverse_transform(low[data_len:]), label = "ActualStocks")
-    x2.plot(day_pred,apl, label = "PredictedStocks")
-    x2.legend()
-    st.pyplot(fig2)
-    cc1, cc2, cc3 = st.columns(3)
-    with cc2:
-        st.markdown("<h3 style='text-align: centre; color: cyan;'>ACTUAL vs PRECDICTED</h3>",
-                        unsafe_allow_html=True)
+    st.markdown(
+        """
+        <style>
+        .stButton button {
+            background-color: black;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-#     st.dataframe(amz)
-
-    print("sucess")
+    predict_button = st.button("Forecast")
 
 
+if predict_button:
+    query = {"tickerSym": ticker_symbol}
+    results = collection.find(query)
+
+    data = []
+
+    for i in results:
+        data.append(i)
+
+    if len(data) == 0:
+        # st.write("Model was not found")
+        data = pdr.get_data_tiingo(ticker_symbol, api_key = key)
+        data = data.reset_index()
+        last_date = data.iloc[-1]['date']
+
+        data = data.drop(['symbol', 'date', 'divCash', 'splitFactor'], axis = 1)
+
+        scaler = MinMaxScaler(feature_range=(0, 1))
+
+        scaled_data = scaler.fit_transform(data)
+        tx = [] 
+        ty = []
+        n_past = 100
+        for i in range(100, len(scaled_data)-1+1):
+            tx.append(scaled_data[i-n_past:i, 0:data.shape[1]])
+            ty.append(scaled_data[i+1-1:i+1, 1]) 
+
+        tx = np.array(tx)
+        ty = np.array(ty)
+
+        model = Sequential()
+        model.add(LSTM(64, activation='relu', input_shape=(tx.shape[1], tx.shape[2]), return_sequences=True))
+        model.add(LSTM(32, activation='relu', return_sequences=False))
+        model.add(Dropout(0.2))
+        model.add(Dense(ty.shape[1]))
+
+        model.compile(optimizer='adam', loss='mse')
+        with st.spinner('Model is predicting have patience... 🤫About 2-3 mins...'):
+            model.fit(tx, ty, epochs=100, batch_size=65, validation_split=0.1, verbose=1)
+
+        sc = scaler.transform(data[-100:]) 
+
+        sc = np.reshape(sc, (1, 100, 10))
+
+        predictions = []
+        for i in range(30):
+            prediction = model.predict(sc) 
+
+            next_day_prediction = prediction[0][0]  
+            
+            predictions.append(next_day_prediction)
+            
+            sc = np.roll(sc, -1, axis=1)
+            sc[0, -1, :] = next_day_prediction
+
+        predictions = np.array(predictions)
+        predictions = predictions.reshape(-1, 1)
+
+        prediction_copies = np.repeat(predictions, data.shape[1], axis=-1)
+        preds = scaler.inverse_transform(prediction_copies)[:, 0].tolist()  
+
+        dataT = {
+            "tickerSym": ticker_symbol,
+            "last_date" : last_date,
+            "last_value" : data.iloc[-1][1],
+            "forecast" : preds,
+        }
+
+        result = collection.insert_one(dataT)
+
+        now = datetime(last_date.year, last_date.month, last_date.day)
+
+        future_dates = []
+
+        for i in range(forecast_days):  
+            future_date = now + timedelta(days=i)
+            future_dates.append(future_date.date())
+
+        to_plot = pd.DataFrame({'DATES' : future_dates, 'FUTURE PREDICTION OF HIGHEST STOCK PRICE' : preds[:forecast_days]})
+        col11, col12 = st.columns(2)
+        
+        with col11:
+            line = px.line(to_plot, x = 'DATES', y = 'FUTURE PREDICTION OF HIGHEST STOCK PRICE', title = 'PREDICTION FOR HIGH PRICE')
+            st.plotly_chart(line)
+
+        with col12:
+            area = px.area(to_plot, x = 'DATES', y = 'FUTURE PREDICTION OF HIGHEST STOCK PRICE')
+            st.plotly_chart(area)
+
+        col555, col566, col577 = st.columns(3)
+        with col566:
+            fig = go.Figure(go.Indicator(
+                mode="number+delta",
+                value=preds[0],
+                delta={'position': "top", 'reference': data.iloc[-1][1]},
+                domain={'x': [0, 1], 'y': [0, 1]},
+                title = {'text': 'HIGH VALUE FROM THE LAST DAY'}
+            ))
+
+            fig.update_layout(
+                width=350,  
+                height=350  
+            )
+
+            st.plotly_chart(fig)
+        
+        col444, col455, col466 = st.columns(3)
+        with col455:
+            st.write("HIGHEST PRICE OF A STOCK FORECAST : ")
+            st.dataframe(to_plot)
+
+        
+        st.write(f'LINK TO YOUR STOCK : https://finance.yahoo.com/quote/{ticker_symbol}')
+
+
+    else:
+        document = collection.find_one()
+
+        last_date = document['last_date']
+        pred_vals = document['forecast']
+        last_value = document['last_value']
+        now = datetime(last_date.year, last_date.month, last_date.day)
+
+        future_dates = []
+
+        for i in range(forecast_days):
+            future_date = now + timedelta(days=i)
+            future_dates.append(future_date.date())
+        
+        to_plot = pd.DataFrame({'DATES' : future_dates, 'FUTURE PREDICTION OF HIGHEST STOCK PRICE' : pred_vals[:forecast_days]})
+        col77, col88 = st.columns(2)
+
+        with col77:
+            line = px.line(to_plot, x = 'DATES', y = 'FUTURE PREDICTION OF HIGHEST STOCK PRICE', title = 'PREDICTION FOR HIGH PRICE')
+            st.plotly_chart(line)
+
+        with col88:
+            area = px.area(to_plot, x = 'DATES', y = 'FUTURE PREDICTION OF HIGHEST STOCK PRICE')
+            st.plotly_chart(area) 
+
+        col55, col56, col57 = st.columns(3)
+        with col56:
+            fig = go.Figure(go.Indicator(
+                mode="number+delta",
+                value=pred_vals[0],
+                delta={'position': "top", 'reference': last_value},
+                domain={'x': [0, 1], 'y': [0, 1]},
+                title = {'text' : 'HIGH VALUE FROM THE LAST DAY'}
+            ))
+
+            fig.update_layout(
+                width=350,  
+                height=350  
+            )
+
+            st.plotly_chart(fig)
+
+
+        col44, col45, col46 = st.columns(3)
+        with col45:
+            st.write("HIGHEST PRICE OF A STOCK FORECAST : ")
+            st.dataframe(to_plot)
+
+        st.write(f'URL TO YOUR STOCK : https://finance.yahoo.com/quote/{ticker_symbol}')
