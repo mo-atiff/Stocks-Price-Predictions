@@ -91,6 +91,7 @@ if predict_button:
     if len(data) == 0:
         # st.write("Model was not found")
         data = pdr.get_data_tiingo(ticker_symbol, api_key = key)
+        data = pd.concat(objs=[data], axis=0)
         data = data.reset_index()
         last_date = data.iloc[-1]['date']
 
