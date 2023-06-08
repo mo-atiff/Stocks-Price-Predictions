@@ -7,4 +7,4 @@ scikit_learn==1.2.2
 streamlit==1.17.0
 tensorflow==2.12.0
 tensorflow_intel==2.11.0
-https://github.com/Atifbeast/pandas-datareader/tree/main/pandas_datareader.git@main
+https://github.com/Atifbeast/pandas-datareader
