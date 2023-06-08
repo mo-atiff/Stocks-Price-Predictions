@@ -1,8 +1,10 @@
 numpy==1.23.3
-pandas==1.4.4
+pandas==2.0.2
 pandas_datareader==0.10.0
 plotly==5.13.0
 pymongo==4.3.3
-scikit_learn==1.2.0
+scikit_learn==1.2.2
 streamlit==1.17.0
-tensorflow==2.10.0
+tensorflow==2.12.0
+tensorflow_intel==2.11.0
+https://github.com/Atifbeast/pandas-datareader/tree/main/pandas_datareader.git@main
