@@ -1,2 +1,2 @@
-# Stocks-Price-Predictions
-https://atifbeast-stocks-price-predictions-stocks-ctcijo.streamlit.app/
+# stocks-price-predictor
+LINK TO MY APP : https://atifbeast-stocks-price-predictions-stocks-ctcijo.streamlit.app/
