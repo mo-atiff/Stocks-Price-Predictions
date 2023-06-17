@@ -1,11 +1,9 @@
 # STOCK PRICE PREDICTOR
 LINK TO MY APP : https://atifbeast-stocks-price-predictions-stocks-ctcijo.streamlit.app/
 
-![Project Logo](link/to/logo.png) <!-- Replace with your project logo -->
-
 > An innovative application that leverages Deep Learning techniques to predict future prices on the highly volatile stock market.
 
-![Preview](link/to/preview.png) <!-- Replace with a preview image of your application -->
+![Preview](Screenshot (133).png) <!-- Replace with a preview image of your application -->
 
 ## Features
 
