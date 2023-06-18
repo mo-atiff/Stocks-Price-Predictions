@@ -21,3 +21,14 @@ LINK TO MY APP : https://atifbeast-stocks-price-predictions-stocks-ctcijo.stream
 ```bash
 git clone https://github.com/Atifbeast/Stocks-Price-Predictions.git
 
+2. Change to the project directory:
+
+```bash
+cd stock-price-predictor
+
+3. Install the dependencies:
+```bash
+pip install -r requirements.txt
+
+## Usage
+
