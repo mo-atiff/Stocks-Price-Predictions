@@ -3,7 +3,7 @@ LINK TO MY APP : https://atifbeast-stocks-price-predictions-stocks-ctcijo.stream
 
 > An innovative application that leverages Deep Learning techniques to predict future prices on the highly volatile stock market.
 
-![Preview](./Screenshot (133).png) <!-- Replace with a preview image of your application -->
+![Preview](./Screenshot%20(133).png) <!-- Replace with a preview image of your application -->
 
 ## Features
 
