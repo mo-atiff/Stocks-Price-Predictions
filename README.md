@@ -37,3 +37,9 @@ pip install -r requirements.txt
 1. Obtain a Tiingo API key by signing up at [Tiingo](https://www.tiingo.com/).
 2. Open the config.py file and replace the API_KEY value with your Tiingo API key.
 3. Run the application:
+
+## Contributing
+Contributions are welcome! If you find any issues or have suggestions, please open an issue or submit a pull request.
+
+## License
+This project is licensed under the MIT License.
