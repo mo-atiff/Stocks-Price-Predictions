@@ -15,10 +15,6 @@ import plotly.graph_objects as go
 
 
 key = st.secrets["api_key"]
-st.write(key)
-
-
-# key = 'd1e0bf0b26e537200ebc6fce031449455a3f44e9'
 
 ticker_symbols = []
 nasdaq = pd.read_csv("nasdaq.csv")
