@@ -279,7 +279,7 @@ elif ml=='Signup':
     st.title("Sign Up")
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
-    conf = st.text_input("Password", type="password", key="login-password")
+    conf = st.text_input("Confirm Password", type="password", key="login-password")
     email = st.text_input("Email")
 
     if password == conf:
